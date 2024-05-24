@@ -14,6 +14,7 @@ namespace itog_project
     {
         bool draw = false;
         int currX = 0, brushSize = 10;
+        int rw, rh;
         Point oldPoint, point1, point2;
         Graphics g;
         Brush fillBrush = new SolidBrush(Color.White);
@@ -113,27 +114,44 @@ namespace itog_project
             addLine.textBox3.Text = "0";
             addLine.textBox4.Text = "0";
             addLine.button1.Click += drawLine;
-            addLine.Show();
+            addLine.ShowDialog();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            addRect.textBox1.Text = "0";
-            addRect.textBox2.Text = "0";
             addRect.textBox3.Text = "0";
             addRect.textBox4.Text = "0";
             addRect.button1.Click += drawRect;
-            addRect.Show();
+            addRect.ShowDialog();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            addEllipse.textBox1.Text = "0";
-            addEllipse.textBox2.Text = "0";
             addEllipse.textBox3.Text = "0";
             addEllipse.textBox4.Text = "0";
             addEllipse.button1.Click += drawEllipse;
-            addEllipse.Show();
+            addEllipse.ShowDialog();
+        }
+
+        private void drawLine(object sender, EventArgs e)
+        {
+            point1 = new Point(Convert.ToInt32(addLine.textBox1.Text), Convert.ToInt32(addLine.textBox2.Text));
+            point2 = new Point(Convert.ToInt32(addLine.textBox3.Text), Convert.ToInt32(addLine.textBox4.Text));
+            g.FillEllipse(brush, point1.X - brushSize / 2, point1.Y - brushSize / 2, brushSize, brushSize);
+            g.DrawLine(pen, point1.X, point1.Y, point2.X, point2.Y);
+            g.FillEllipse(brush, point2.X - brushSize / 2, point2.Y - brushSize / 2, brushSize, brushSize);
+            pictureBox4.Invalidate();
+        }
+
+        private void drawRect(object sender, EventArgs e)
+        {
+            point2 = new Point(Convert.ToInt32(addRect.textBox3.Text), Convert.ToInt32(addRect.textBox4.Text));
+        }
+
+        private void drawEllipse(object sender, EventArgs e)
+        {
+            rw = Convert.ToInt32(addEllipse.textBox3.Text);
+            rh = Convert.ToInt32(addEllipse.textBox4.Text);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -155,41 +173,23 @@ namespace itog_project
             addColor.button1.Click -= colorChanged;
         }
 
-        private void drawLine(object sender, EventArgs e)
-        {
-            label3.Text = addLine.textBox3.Text;
-            //point2 = new Point(Convert.ToInt32(addLine.textBox3.Text), Convert.ToInt32(addLine.textBox4.Text));
-            //point1 = new Point(Convert.ToInt32(addLine.textBox1.Text), Convert.ToInt32(addLine.textBox2.Text));
-            g.FillEllipse(brush, point1.X - brushSize / 2, point1.Y - brushSize / 2, brushSize, brushSize);
-            g.DrawLine(pen, point1.X, point1.Y, point2.X, point2.Y);
-            g.FillEllipse(brush, point2.X - brushSize / 2, point2.Y - brushSize / 2, brushSize, brushSize);
-            pictureBox4.Invalidate();
-        }
-
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyData == Keys.R)
             {
-                label3.Text = point1.X.ToString() + ' ' + point1.Y.ToString() + ' ' + point2.X.ToString() + ' ' + point2.Y.ToString();
                 g.FillRectangle(brush, point1.X - point2.X / 2, point1.Y - point2.Y / 2, point2.X, point2.Y);
+                pictureBox4.Invalidate();
+            }
+            else if (e.KeyData == Keys.E)
+            {
+                g.FillEllipse(brush, point1.X - rw / 2, point1.Y - rh / 2, rw, rh);
                 pictureBox4.Invalidate();
             }
         }
 
-        private void drawRect(object sender, EventArgs e)
+        private void button6_Click(object sender, EventArgs e)
         {
-            point1 = new Point(Convert.ToInt32(addRect.textBox1.Text), Convert.ToInt32(addRect.textBox2.Text));
-            point2 = new Point(Convert.ToInt32(addRect.textBox3.Text), Convert.ToInt32(addRect.textBox4.Text));
-            g.FillRectangle(brush, point1.X, point1.Y, point2.X, point2.Y);
-            pictureBox4.Invalidate();
-        }
 
-        private void drawEllipse(object sender, EventArgs e)
-        {
-            point1 = new Point(Convert.ToInt32(addEllipse.textBox1.Text), Convert.ToInt32(addEllipse.textBox2.Text));
-            int rw = Convert.ToInt32(addEllipse.textBox3.Text), rh = Convert.ToInt32(addEllipse.textBox4.Text);
-            g.FillEllipse(brush, point1.X, point1.Y, rw, rh);
-            pictureBox4.Invalidate();
         }
 
         private void button2_Click(object sender, EventArgs e)
