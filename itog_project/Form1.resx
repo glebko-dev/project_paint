@@ -226,7 +226,7 @@
     <value>12</value>
   </data>
   <data name="button2.Text" xml:space="preserve">
-    <value>Сохранить как</value>
+    <value>Сохранить как...</value>
   </data>
   <data name="&gt;&gt;button2.Name" xml:space="preserve">
     <value>button2</value>

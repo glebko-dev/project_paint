@@ -12,7 +12,7 @@ namespace itog_project
 {
     public partial class Form1 : Form
     {
-        bool draw = false;
+        bool draw = false, fill = true;
         int currX = 0, brushSize = 10;
         int rw, rh;
         Point oldPoint, point1, point2;
@@ -78,7 +78,8 @@ namespace itog_project
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            brushSize = Convert.ToInt32(textBox1.Text);
+            if (int.TryParse(textBox1.Text, out brushSize))
+                brushSize = Convert.ToInt32(textBox1.Text);
             pen.Width = brushSize;
         }
 
@@ -122,6 +123,7 @@ namespace itog_project
         {
             addRect.textBox3.Text = "0";
             addRect.textBox4.Text = "0";
+            addEllipse.checkBox1.Checked = true;
             addRect.button1.Click += drawRect;
             addRect.ShowDialog();
         }
@@ -130,6 +132,7 @@ namespace itog_project
         {
             addEllipse.textBox3.Text = "0";
             addEllipse.textBox4.Text = "0";
+            addEllipse.checkBox1.Checked = true;
             addEllipse.button1.Click += drawEllipse;
             addEllipse.ShowDialog();
         }
@@ -147,12 +150,14 @@ namespace itog_project
         private void drawRect(object sender, EventArgs e)
         {
             point2 = new Point(Convert.ToInt32(addRect.textBox3.Text), Convert.ToInt32(addRect.textBox4.Text));
+            fill = addRect.checkBox1.Checked;
         }
 
         private void drawEllipse(object sender, EventArgs e)
         {
             rw = Convert.ToInt32(addEllipse.textBox3.Text);
             rh = Convert.ToInt32(addEllipse.textBox4.Text);
+            fill = addEllipse.checkBox1.Checked;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -161,34 +166,67 @@ namespace itog_project
             addColor.textBox2.Text = "0";
             addColor.textBox3.Text = "0";
             addColor.button1.Click += colorChanged;
-            addColor.Show();
+            addColor.ShowDialog();
         }
 
         private void colorChanged(object sender, EventArgs e)
         {
-            brush = new SolidBrush(Color.FromArgb(Convert.ToInt32(addColor.textBox1.Text), Convert.ToInt32(addColor.textBox2.Text), Convert.ToInt32(addColor.textBox3.Text)));
-            pen.Color = Color.FromArgb(Convert.ToInt32(addColor.textBox1.Text), Convert.ToInt32(addColor.textBox2.Text), Convert.ToInt32(addColor.textBox3.Text));
-            panel1.Controls.Add(new PictureBox() {Size = new Size(50, 50), BackColor = Color.FromArgb(Convert.ToInt32(addColor.textBox1.Text), Convert.ToInt32(addColor.textBox2.Text), Convert.ToInt32(addColor.textBox3.Text)), Location = new Point(currX, 0)});
-            panel1.Controls[panel1.Controls.Count - 1].MouseDown += pictureClick;
-            currX += 55;
-            addColor.button1.Click -= colorChanged;
+            if (Convert.ToInt32(addColor.textBox1.Text) >= 0 && Convert.ToInt32(addColor.textBox1.Text) <= 255 && Convert.ToInt32(addColor.textBox2.Text) >= 0 && Convert.ToInt32(addColor.textBox2.Text) <= 255 && Convert.ToInt32(addColor.textBox3.Text) >= 0 && Convert.ToInt32(addColor.textBox3.Text) <= 255)
+            {
+                brush = new SolidBrush(Color.FromArgb(Convert.ToInt32(addColor.textBox1.Text), Convert.ToInt32(addColor.textBox2.Text), Convert.ToInt32(addColor.textBox3.Text)));
+                pen.Color = Color.FromArgb(Convert.ToInt32(addColor.textBox1.Text), Convert.ToInt32(addColor.textBox2.Text), Convert.ToInt32(addColor.textBox3.Text));
+                colors.Add(new PictureBox() {Size = new Size(50, 50), BackColor = Color.FromArgb(Convert.ToInt32(addColor.textBox1.Text), Convert.ToInt32(addColor.textBox2.Text), Convert.ToInt32(addColor.textBox3.Text)), Location = new Point(currX, 0)});
+                panel1.Controls.Add(new PictureBox() {Size = new Size(50, 50), BackColor = Color.FromArgb(Convert.ToInt32(addColor.textBox1.Text), Convert.ToInt32(addColor.textBox2.Text), Convert.ToInt32(addColor.textBox3.Text)), Location = new Point(currX, 0)});
+                panel1.Controls[panel1.Controls.Count - 1].MouseDown += pictureClick;
+                currX += 55;
+                addColor.button1.Click -= colorChanged;
+            }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyData == Keys.R)
+            if (e.Control && e.KeyCode == Keys.N)
             {
-                g.FillRectangle(brush, point1.X - point2.X / 2, point1.Y - point2.Y / 2, point2.X, point2.Y);
-                pictureBox4.Invalidate();
+                g.Clear(Color.White);
+                g.FillRectangle(fillBrush, new Rectangle(0, 0, pictureBox4.Size.Width, pictureBox4.Size.Height));
             }
+
+            else if (e.Control && e.KeyCode == Keys.S)
+                save();
+
+            else if (e.Control && e.KeyCode == Keys.O)
+                open();
+
+            else if (e.KeyData == Keys.R)
+            {
+                if (fill)
+                    g.FillRectangle(brush, point1.X - point2.X / 2, point1.Y - point2.Y / 2, point2.X, point2.Y);
+                else
+                    g.DrawRectangle(pen, point1.X - point2.X / 2, point1.Y - point2.Y / 2, point2.X, point2.Y);
+            }
+
             else if (e.KeyData == Keys.E)
             {
-                g.FillEllipse(brush, point1.X - rw / 2, point1.Y - rh / 2, rw, rh);
-                pictureBox4.Invalidate();
+                if (fill)
+                    g.FillEllipse(brush, point1.X - rw / 2, point1.Y - rh / 2, rw, rh);
+                else
+                    g.DrawEllipse(pen, point1.X - rw / 2, point1.Y - rh / 2, rw, rh);
             }
+
+            pictureBox4.Invalidate();
         }
 
         private void button6_Click(object sender, EventArgs e)
+        {
+            open();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            save();
+        }
+
+        private void open()
         {
             OpenFileDialog OpenFileDialog = new OpenFileDialog();
             OpenFileDialog.Filter = "Image Files(*.JPG)|*.JPG|Image Files(*.PNG)|*.PNG|Image Files(*.BMP)|*.BMP|All files(*.*)|*.*";
@@ -200,7 +238,7 @@ namespace itog_project
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void save()
         {
             SaveFileDialog SaveFileDialog = new SaveFileDialog();
             SaveFileDialog.Filter = "Image Files(*.JPG)|*.JPG|Image Files(*.PNG)|*.PNG|Image Files(*.BMP)|*.BMP|All files(*.*)|*.*";
