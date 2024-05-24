@@ -20,6 +20,7 @@ namespace itog_project
         Brush fillBrush = new SolidBrush(Color.White);
         Brush brush = new SolidBrush(Color.Black);
         Pen pen = new Pen(Color.Black, 10);
+        Bitmap bitmap;
 
         Form2 addColor = new Form2();
         Form3 addLine = new Form3();
@@ -41,7 +42,7 @@ namespace itog_project
             InitializeComponent();
             drawColors();
 
-            Bitmap bitmap = new Bitmap(pictureBox4.Width, pictureBox4.Height);
+            bitmap = new Bitmap(pictureBox4.Width, pictureBox4.Height);
             pictureBox4.Image = bitmap;
 
             g = Graphics.FromImage(bitmap);
@@ -189,15 +190,22 @@ namespace itog_project
 
         private void button6_Click(object sender, EventArgs e)
         {
-
+            OpenFileDialog OpenFileDialog = new OpenFileDialog();
+            OpenFileDialog.Filter = "Image Files(*.JPG)|*.JPG|Image Files(*.PNG)|*.PNG|Image Files(*.BMP)|*.BMP|All files(*.*)|*.*";
+            if (OpenFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                pictureBox4.Image = Image.FromFile(OpenFileDialog.FileName);
+                bitmap = (Bitmap)pictureBox4.Image;
+                g = Graphics.FromImage(bitmap);
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            SaveFileDialog fileDialog = new SaveFileDialog();
-            fileDialog.Filter = "Image Files(*.JPG)|*.JPG|Image Files(*.PNG)|*.PNG|Image Files(*.BMP)|*.BMP|All files(*.*)|*.*";
-            if (fileDialog.ShowDialog() == DialogResult.OK)
-                pictureBox4.Image.Save(fileDialog.FileName);
+            SaveFileDialog SaveFileDialog = new SaveFileDialog();
+            SaveFileDialog.Filter = "Image Files(*.JPG)|*.JPG|Image Files(*.PNG)|*.PNG|Image Files(*.BMP)|*.BMP|All files(*.*)|*.*";
+            if (SaveFileDialog.ShowDialog() == DialogResult.OK)
+                pictureBox4.Image.Save(SaveFileDialog.FileName);
         }
     }
 }
