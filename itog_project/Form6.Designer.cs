@@ -78,7 +78,7 @@ namespace itog_project
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(16, 65);
+            this.button3.Location = new System.Drawing.Point(16, 58);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 4;
@@ -110,7 +110,7 @@ namespace itog_project
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(362, 90);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.button3);
