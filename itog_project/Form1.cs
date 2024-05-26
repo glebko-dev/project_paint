@@ -12,7 +12,7 @@ namespace itog_project
 {
     public partial class Form1 : Form
     {
-        bool draw = false, fill = true;
+        bool draw = false, fill = true, changeRectKey = false, changeEllipseKey = false;
         int currX = 0, brushSize = 10;
         int rw, rh;
         Point oldPoint, point1, point2;
@@ -22,10 +22,14 @@ namespace itog_project
         Pen pen = new Pen(Color.Black, 10);
         Bitmap bitmap;
 
+        Keys keyEllipse = Keys.E;
+        Keys keyRect = Keys.R;
+
         Form2 addColor = new Form2();
         Form3 addLine = new Form3();
         Form4 addRect = new Form4();
         Form5 addEllipse = new Form5();
+        Form6 settings = new Form6();
 
         List<PictureBox> colors = new List<PictureBox>() {
             new PictureBox() {Size = new Size(50, 50), BackColor = Color.Red},
@@ -169,6 +173,60 @@ namespace itog_project
             addColor.ShowDialog();
         }
 
+        private void button7_Click(object sender, EventArgs e)
+        {
+            settings.button1.Text = "Изменить";
+            settings.button2.Text = "Изменить";
+            settings.label1.Text = $"Кнопка для рисования прямоугольника: {keyRect.ToString()}";
+            settings.label2.Text = $"Кнопка для рисования эллипса: {keyEllipse.ToString()}";
+            settings.button1.Click += rectKeyChanged;
+            settings.button2.Click += ellipseKeyChanged;
+            settings.pictureBox1.Click += rectKeyReturn;
+            settings.pictureBox2.Click += ellipseKeyReturn;
+            settings.ShowDialog();
+        }
+
+
+        private void rectKeyReturn(object sender, EventArgs e)
+        {
+            keyRect = Keys.R;
+            settings.label1.Text = $"Кнопка для рисования прямоугольника: {keyRect.ToString()}";
+        }
+        
+        private void ellipseKeyReturn(object sender, EventArgs e)
+        {
+            keyEllipse = Keys.E;
+            settings.label2.Text = $"Кнопка для рисования эллипса: {keyEllipse.ToString()}";
+        }
+        
+        private void rectKeyChanged(object sender, EventArgs e)
+        {
+            settings.button1.Text = "Нажимайте...";
+            settings.button1.KeyDown += settingsRectKey;
+        }
+
+        private void ellipseKeyChanged(object sender, EventArgs e)
+        {
+            settings.button2.Text = "Нажимайте...";
+            settings.button2.KeyDown += settingsEllipseKey;
+        }
+
+        private void settingsRectKey(object sender, KeyEventArgs e)
+        {
+            keyRect = e.KeyCode;
+            settings.label1.Text = $"Кнопка для рисования прямоугольника: {keyRect.ToString()}";
+            settings.button1.Text = "Изменить";
+            settings.button1.KeyDown -= settingsRectKey;
+        }
+
+        private void settingsEllipseKey(object sender, KeyEventArgs e)
+        {
+            keyEllipse = e.KeyCode;
+            settings.label2.Text = $"Кнопка для рисования эллипса: {keyEllipse.ToString()}";
+            settings.button2.Text = "Изменить";
+            settings.button2.KeyDown -= settingsEllipseKey;
+        }
+
         private void colorChanged(object sender, EventArgs e)
         {
             if (Convert.ToInt32(addColor.textBox1.Text) >= 0 && Convert.ToInt32(addColor.textBox1.Text) <= 255 && Convert.ToInt32(addColor.textBox2.Text) >= 0 && Convert.ToInt32(addColor.textBox2.Text) <= 255 && Convert.ToInt32(addColor.textBox3.Text) >= 0 && Convert.ToInt32(addColor.textBox3.Text) <= 255)
@@ -197,7 +255,7 @@ namespace itog_project
             else if (e.Control && e.KeyCode == Keys.O)
                 open();
 
-            else if (e.KeyData == Keys.R)
+            else if (e.KeyData == keyRect)
             {
                 if (fill)
                     g.FillRectangle(brush, point1.X - point2.X / 2, point1.Y - point2.Y / 2, point2.X, point2.Y);
@@ -205,7 +263,7 @@ namespace itog_project
                     g.DrawRectangle(pen, point1.X - point2.X / 2, point1.Y - point2.Y / 2, point2.X, point2.Y);
             }
 
-            else if (e.KeyData == Keys.E)
+            else if (e.KeyData == keyEllipse)
             {
                 if (fill)
                     g.FillEllipse(brush, point1.X - rw / 2, point1.Y - rh / 2, rw, rh);
